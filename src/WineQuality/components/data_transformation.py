@@ -20,14 +20,14 @@ class DataTransformation:
     
     def train_test_split(self):
         scaler = StandardScaler()
-        X = self.df.iloc[:,:11]
-        Y = self.df.iloc[:,-1]
+        X = self.df.drop(columns=[self.config.target_column], axis=1)
+        Y = self.df[[self.config.target_column]]
 
         X_train, X_test, Y_train, Y_test = train_test_split(X , Y, test_size=0.2, random_state=22)
-        X_train.to_csv(os.path.join(self.config.root_dir,"X_train" ), index = False)
-        X_test.to_csv(os.path.join(self.config.root_dir,"X_test"), index = False)
-        Y_train.to_csv(os.path.join(self.config.root_dir,"Y_train"), index = False)
-        Y_test.to_csv(os.path.join(self.config.root_dir,"Y_test"), index = False)
+        X_train.to_csv(os.path.join(self.config.root_dir,"X_train.csv" ), index = False)
+        X_test.to_csv(os.path.join(self.config.root_dir,"X_test.csv"), index = False)
+        Y_train.to_csv(os.path.join(self.config.root_dir,"Y_train.csv"), index = False)
+        Y_test.to_csv(os.path.join(self.config.root_dir,"Y_test.csv"), index = False)
 
         logger.info(f"Data splitted into X_train, X_test, Y_train, Y_test")
         logger.info(f"X_train.shape: {X_train.shape}")

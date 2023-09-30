@@ -3,7 +3,9 @@ from WineQuality.utils.common import read_yaml, create_directories
 from WineQuality.entity.config_entity import (
     DataIngestionConfig, 
     DataValidationConfig,
-    DataTransformationConfig
+    DataTransformationConfig,
+    ModelTrainerConfig,
+    ModelEvaluationConfig
     )
 
 class ConfigurationManager:
@@ -42,13 +44,51 @@ class ConfigurationManager:
 
     def get_data_transformation_config(self) -> DataTransformationConfig:
         config = self.config.data_transformation
-        
+        schema = self.schema.TARGET_COLUMN
+
         create_directories([config.root_dir])
         
         data_transformation_config = DataTransformationConfig(
             root_dir = config.root_dir,
             data_path = config.data_path,
-            STATUS_FILE = config.STATUS_FILE
+            STATUS_FILE = config.STATUS_FILE,
+            target_column = schema.name
         )
         return data_transformation_config
         
+    def get_model_trainer_config(self) -> ModelTrainerConfig:
+        config = self.config.model_trainer
+        params = self.params.ElasticNet
+        schema = self.schema.TARGET_COLUMN
+        
+        create_directories([config.root_dir])
+        
+        model_trainer_config = ModelTrainerConfig(
+            root_dir = config.root_dir,
+            x_train_data_path = config.x_train_data_path,
+            y_train_data_path = config.y_train_data_path,
+            model_name = config.model_name,
+            alpha = params.alpha,
+            l1_ratio = params.l1_ratio,
+        )
+        return model_trainer_config
+
+    def get_model_evaluation_config(self) -> ModelEvaluationConfig:
+        config = self.config.model_evaluation
+        params = self.params
+        schema = self.schema.TARGET_COLUMN
+        
+        create_directories([config.root_dir])
+        
+        model_evaluation_config = ModelEvaluationConfig(
+            root_dir = config.root_dir,
+            x_test_data_path = config.x_test_data_path,
+            y_test_data_path = config.y_test_data_path,
+            model_path = config.model_path,
+            metric_file_name = config.metric_file_name,
+            all_params = params.ElasticNet,
+            target_column = schema.name,
+            mlflow_uri = "https://dagshub.com/ij451r/Project-WineQualityDataset.mlflow",
+        )
+
+        return model_evaluation_config        
